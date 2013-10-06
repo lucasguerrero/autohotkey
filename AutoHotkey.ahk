@@ -382,21 +382,9 @@ MenuHandlerSqlServer:
 		{
 			MsgBox, 0, Parametros No Validos, PARAMETROS NO VALIDOS
 		}else{
-			Send -- Kill all processes connected to a database.{enter}USE [master];{enter}{enter}declare @DatabaseName varchar(50);{enter}{enter}declare @Spid varchar(20);{enter}{enter}declare @Command varchar(50);{enter}{enter}set @DatabaseName = 'SC_GESDRALIA';{enter}{enter}print 'This query''s SPID: ' {+} convert(varchar, @@spid);{enter}{enter}-- Select all SPIDs except the SPID for this connection{enter}declare SpidCursor cursor for{enter}select spid from master.dbo.sysprocesses{enter}where dbid = db_id(@DatabaseName){enter}and spid {!}{=} @@spid{enter}{enter}open SpidCursor{enter}{enter}fetch next from SpidCursor into @spid{enter}{enter}while @@fetch_status = 0{enter}begin{enter}print 'Killing process: ' {+} rtrim(@spid);{enter}set @Command = 'kill ' {+} rtrim(@spid) {+} ';';{enter}print @Command;{enter}execute(@Command);{enter}fetch next from SpidCursor into @spid{enter}end{enter}{enter}close SpidCursor{enter}deallocate SpidCursor{enter}{enter}GO{enter}RESTORE DATABASE [SC_GESDRALIA] FROM DISK = N'E:\BACKUPS_BD_PRODU\GESDRALIA\%NOMBACKUP%.BAK' WITH FILE = 1, MOVE N'SC_GESDRALIA_dat' TO N'E:\BASES DE DATOS\SC_GESDRALIA.mdf',  MOVE N'SC_GESDRALIA_log' TO N'E:\BASES DE DATOS\SC_GESDRALIA.ldf', NOUNLOAD, REPLACE, STATS = 10{enter}{F5}
+			Send -- Primero matamos todos los procesos asociados a una base de datos.{enter}USE [master];{enter}{enter}declare @DatabaseName varchar(50);{enter}{enter}declare @Spid varchar(20);{enter}{enter}declare @Command varchar(50);{enter}{enter}set @DatabaseName = 'SC_GESDRALIA';{enter}{enter}print 'This query''s SPID: ' {+} convert(varchar, @@spid);{enter}{enter}-- Select all SPIDs except the SPID for this connection{enter}declare SpidCursor cursor for{enter}select spid from master.dbo.sysprocesses{enter}where dbid = db_id(@DatabaseName){enter}and spid {!}{=} @@spid{enter}{enter}open SpidCursor{enter}{enter}fetch next from SpidCursor into @spid{enter}{enter}while @@fetch_status = 0{enter}begin{enter}print 'Killing process: ' {+} rtrim(@spid);{enter}set @Command = 'kill ' {+} rtrim(@spid) {+} ';';{enter}print @Command;{enter}execute(@Command);{enter}fetch next from SpidCursor into @spid{enter}end{enter}{enter}close SpidCursor{enter}deallocate SpidCursor{enter}{enter}GO{enter}RESTORE DATABASE [SC_GESDRALIA] FROM DISK = N'E:\BACKUPS_BD_PRODU\GESDRALIA\%NOMBACKUP%.BAK' WITH FILE = 1, MOVE N'SC_GESDRALIA_dat' TO N'E:\BASES DE DATOS\SC_GESDRALIA.mdf',  MOVE N'SC_GESDRALIA_log' TO N'E:\BASES DE DATOS\SC_GESDRALIA.ldf', NOUNLOAD, REPLACE, STATS = 10{enter}{F5}
 		}
 	}
-
-;	if (Seleccion = "[Gesdralia] Restaurar+Silvia")
-;	{
-;		InputBox, NOMBACKUP, Nombre del Backup,Introduce el Nombre del Backup a restaurar sin .BAK
-;
-;		If StrLen(NOMBACKUP) < 1
-;		{
-;			MsgBox, 0, Parametros No Validos, PARAMETROS NO VALIDOS
-;		}else{
-;			Send -- Kill all processes connected to a database.{enter}USE [master];{enter}{enter}declare @DatabaseName varchar(50);{enter}{enter}declare @Spid varchar(20);{enter}{enter}declare @Command varchar(50);{enter}{enter}set @DatabaseName = 'SC_GESDRALIA';{enter}{enter}print 'This query''s SPID: ' {+} convert(varchar, @@spid);{enter}{enter}-- Select all SPIDs except the SPID for this connection{enter}declare SpidCursor cursor for{enter}select spid from master.dbo.sysprocesses{enter}where dbid = db_id(@DatabaseName){enter}and spid {!}{=} @@spid{enter}{enter}open SpidCursor{enter}{enter}fetch next from SpidCursor into @spid{enter}{enter}while @@fetch_status = 0{enter}begin{enter}print 'Killing process: ' {+} rtrim(@spid);{enter}set @Command = 'kill ' {+} rtrim(@spid) {+} ';';{enter}print @Command;{enter}execute(@Command);{enter}fetch next from SpidCursor into @spid{enter}end{enter}{enter}close SpidCursor{enter}deallocate SpidCursor{enter}{enter}GO{enter}RESTORE DATABASE [SC_GESDRALIA] FROM DISK = N'E:\PROYECTOS\LABORATORIOS ALCALA FARMA\%NOMBACKUP%.BAK' WITH FILE = 1, MOVE N'SC_GESDRALIA_dat' TO N'E:\BASES DE DATOS\SC_GESDRALIA.mdf',  MOVE N'SC_GESDRALIA_log' TO N'E:\BASES DE DATOS\SC_GESDRALIA.ldf', NOUNLOAD, REPLACE, STATS = 10{enter}GO{enter}USE SC_GESDRALIA{enter}CREATE USER [silvia] FOR LOGIN [silvia]{enter}GO{enter}EXEC sp_addrolemember N'db_accessadmin', N'silvia'{enter}GO{enter}EXEC sp_addrolemember N'db_backupoperator', N'silvia'{enter}GO{enter}EXEC sp_addrolemember N'db_datareader', N'silvia'{enter}GO{enter}EXEC sp_addrolemember N'db_datawriter', N'silvia'{enter}GO{enter}EXEC sp_addrolemember N'db_ddladmin', N'silvia'{enter}GO{enter}EXEC sp_addrolemember N'db_owner', N'silvia'{enter}GO{enter}EXEC sp_addrolemember N'db_securityadmin', N'silvia'{enter}GO{enter}{F5}
-;		}
-;	}
 	
 return
 
@@ -503,10 +491,10 @@ SC045:: ;Este es el codigo para la tecla "Pausa"
 	MsgBox,4,Utilidades, SI = [RDC Manager] - NO = [VirtualBox]
 	IfMsgBox, Yes
 	{
-	if not WinExist( "ahk_class WindowsForms10.Window.8.app.0.3ce0bb8" )
-		Run %A_ProgramFiles%\Remote Desktop Connection Manager\RDCMan.exe
-	WinActivate
-	Return
+		if not WinExist( "ahk_class WindowsForms10.Window.8.app.0.3ce0bb8" )
+			Run %A_ProgramFiles%\Remote Desktop Connection Manager\RDCMan.exe
+		WinActivate
+		Return
 	}else{
 		if not WinExist( "Oracle VM VirtualBox Administrador ahk_class QWidget" )
 			Run %A_ProgramFiles%\Oracle\VirtualBox\VirtualBox.exe
@@ -520,7 +508,6 @@ SC045:: ;Este es el codigo para la tecla "Pausa"
 	; --------------------------
 	Run sqlplus fiteqa_visitas/13wk68f4@192.168.0.238/orcl
 	Return
-	
 
 ; ------------------
 ; BEYOND COMPARE
@@ -613,9 +600,62 @@ F6:: Send ^R ; No funciona todavia
 		SendInput '%CurrentDateTime%'{Space}
 		Return
 
+!F1:: 
+	InputBox, BASEDATOS, Introduce La Base de Datos a Reducir El Log, SC_GESCENDEP - SC_GESDRALIA...
+	If StrLen(BASEDATOS) < 1
+	{
+		MsgBox, 0, Parametros No Validos, PARAMETRO NO VALIDO
+	}else{
+		Send USE %BASEDATOS%{enter}GO{enter}CHECKPOINT{enter}GO{enter}ALTER DATABASE %BASEDATOS% SET RECOVERY SIMPLE{enter}GO{enter}ALTER DATABASE %BASEDATOS% SET RECOVERY FULL{enter}GO{enter}DBCC SHRINKFILE ('%BASEDATOS%_log', 1){enter}{F5}
+	}
+	Return
+		
+; -----------------------
+; GESDRALIA: PRO-SQL
+; -----------------------
+
+!F2:: 
+	MsgBox,1,Utilidades, SI = [GESDRALIA:BACKUP local] - NO = [GESDRALIA:RESTAURAR local]
+	IfMsgBox, Yes {
+		InputBox, NOMBACKUP, Nombre del Backup,Introduce el Nombre del Backup a realizar sin .BAK
+		If StrLen(NOMBACKUP) < 1
+		{
+			MsgBox, 0, Parametros No Validos, PARAMETROS NO VALIDOS
+		}else{
+			Send USE [master]{enter}GO{enter}BACKUP DATABASE [SC_GESDRALIA] TO DISK = N'E:\PROYECTOS\LABORATORIOS ALCALA FARMA\%NOMBACKUP%.BAK' WITH NOFORMAT, INIT, NAME = N'SC_GESDRALIA-Copia de seguridad completa', SKIP, NOREWIND, NOUNLOAD, STATS = 10{enter}{F5}
+		}
+		Return
+	}else{
+		InputBox, NOMBACKUP, Nombre del Backup,Introduce el Nombre del Backup a restaurar sin .BAK
+		If StrLen(NOMBACKUP) < 1
+		{
+			MsgBox, 0, Parametros No Validos, PARAMETROS NO VALIDOS
+		}else{
+			Send -- Primero matamos todos los procesos asociados a una base de datos.{enter}USE [master];{enter}{enter}declare @DatabaseName varchar(50);{enter}{enter}declare @Spid varchar(20);{enter}{enter}declare @Command varchar(50);{enter}{enter}set @DatabaseName = 'SC_GESDRALIA';{enter}{enter}print 'This query''s SPID: ' {+} convert(varchar, @@spid);{enter}{enter}-- Select all SPIDs except the SPID for this connection{enter}declare SpidCursor cursor for{enter}select spid from master.dbo.sysprocesses{enter}where dbid = db_id(@DatabaseName){enter}and spid {!}{=} @@spid{enter}{enter}open SpidCursor{enter}{enter}fetch next from SpidCursor into @spid{enter}{enter}while @@fetch_status = 0{enter}begin{enter}print 'Killing process: ' {+} rtrim(@spid);{enter}set @Command = 'kill ' {+} rtrim(@spid) {+} ';';{enter}print @Command;{enter}execute(@Command);{enter}fetch next from SpidCursor into @spid{enter}end{enter}{enter}close SpidCursor{enter}deallocate SpidCursor{enter}{enter}GO{enter}RESTORE DATABASE [SC_GESDRALIA] FROM DISK = N'E:\BACKUPS_BD_PRODU\GESDRALIA\%NOMBACKUP%.BAK' WITH FILE = 1, MOVE N'SC_GESDRALIA_dat' TO N'E:\BASES DE DATOS\SC_GESDRALIA.mdf',  MOVE N'SC_GESDRALIA_log' TO N'E:\BASES DE DATOS\SC_GESDRALIA.ldf', NOUNLOAD, REPLACE, STATS = 10{enter}{F5}
+		}
+		Return
+	}
+
 ; -----------------------
 ; FITNESS KING: PRO-SQL
 ; -----------------------
+
+!F3:: 
+	MsgBox,2,Utilidades, SI = [GESCENDEP:Cambio de Centro] - NO = [GESCENDEP:Listado Incidencias]
+	IfMsgBox, Yes {
+		InputBox, NUMCENTRO, Introduce El Centro a reasignarme, Centros: 1-RIV 2-PIN 3-MAB 4-GET 5-ARG 6-GIJ
+		
+		If StrLen(NUMCENTRO) < 1
+		{
+			MsgBox, 0, Parametros No Validos, PARAMETRO NO VALIDO
+		}else{
+			Send USE SC_GESCENDEP{enter}GO{enter}{enter}BEGIN{enter}DECLARE @Empresa AS INT, @Centro AS INT, @Usuario AS INT{enter}{enter}SET @Centro = %NUMCENTRO%{enter}SET @Usuario = 2{enter}{enter}SELECT @Empresa = c.ID_Empresa FROM _Centros c WHERE c.ID_Centro = @Centro{enter}{enter}UPDATE _Empleados SET ID_Empresa = @Empresa, ID_Centro = @Centro WHERE ID_Empleado = @Usuario{enter}{enter}SELECT * FROM _Empleados WHERE ID_Empleado = @Usuario{enter}END
+			Send {F5}
+		}
+		Return
+	}else{
+		Send USE SC_GESCENDEP{enter}GO{enter}SELECT {enter}it.ID_IncidenciaTecnica AS ID, {enter}e.Nombre {+} ' ' {+} e.Apellido1 AS Empleado,{enter}c.ID_Empresa AS Empresa,{enter}it.ID_Centro, {enter}c.Descripcion AS Centro,{enter}it.FechaAlta,{enter}tit.TipoIncidenciaTecnica,{enter}eit.EstadoIncidenciaTecnica AS Estado,{enter}it.IncidenciaTecnica,{enter}it.Detalle{enter}FROM IncidenciasTecnicas it, _Centros c, _Empleados e,  __TiposIncidenciaTecnica tit, __EstadosIncidenciaTecnica eit{enter}WHERE it.ID_Centro = c.ID_Centro{enter}AND it.ID_Empleado = e.ID_Empleado{enter}AND it.ID_TipoIncidenciaTecnica = tit.ID_TipoIncidenciaTecnica{enter}AND it.ID_EstadoIncidenciaTecnica = eit.ID_EstadoIncidenciaTecnica{enter}AND it.FechaCierre IS NULL{enter}ORDER BY it.ID_IncidenciaTecnica DESC{Enter}{F5}{Home}	
+	}
 
 ; -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
@@ -630,28 +670,13 @@ F6:: Send ^R ; No funciona todavia
 ::geidcliente::{-}{-} GESCENDEP: PERTENENCIA DEL CLIENTE AL CENTRO{enter}{enter}USE SC_GESCENDEP{enter}GO{enter}SELECT ID_Cliente, Cod_Cliente, Descripcion As Centro{enter}FROM Clientes cl, _Centros c{enter}WHERE cl.ID_Empresa = c.ID_Empresa{enter}AND ID_Cliente = 
 ::gecodcliente::{-}{-} GESCENDEP: PERTENENCIA DEL CLIENTE AL CENTRO{enter}{enter}USE SC_GESCENDEP{enter}GO{enter}SELECT ID_Cliente, Cod_Cliente, Descripcion As Centro{enter}FROM Clientes cl, _Centros c{enter}WHERE cl.ID_Empresa = c.ID_Empresa{enter}AND Cod_Cliente = ''
 
-; --------------------------------------------------------
-; DE MOMENTO NO SE USA (HISTÓRICO DOCUMENTACIÓN)
-; --------------------------------------------------------
-;	MsgBox,4,PRO-SQL FITNESS KING 3 - CONSULTA DE COBROS DE SOCIO POR CENTRO, SI = [Tengo el ID_Cliente] - NO = [Tengo el Cod_Cliente]
-;	IfMsgBox, Yes
-;	{
-;		InputBox, IDCLIENTE, Id Del Socio,Introduce ID Del Socio
-;		InputBox, IDCOBRO, Id Del Cobro,Introduce ID Del Cobro
-;		InputBox, IDCENTRO, Id Del Centro,Introduce ID Del Centro
-;		Send {enter}{-}{-} CONSULTA DE COBROS DE SOCIO POR CENTRO{enter}USE SC_GESCENDEP{enter}GO{enter}SELECT c.ID_Cliente, c.Cod_Cliente, cob.* {enter}FROM Contratos co, Clientes c, Cobros cob{enter}WHERE c.ID_Cliente = co.ID_Cliente {enter}AND co.ID_Contrato = cob.ID_Contrato{enter}AND c.ID_Cliente = %IDCLIENTE%{enter}AND cob.ID_Cobro = %IDCOBRO%{enter}AND co.ID_Centro = %IDCENTRO%{enter}ORDER BY cob.ID_Cobro DESC
-;		Send {F5}
-;		Return
-;	}else{
-;		InputBox, CODCLIENTE, Id Del Socio,Introduce Codigo Del Socio
-;		InputBox, IDCOBRO, Id Del Cobro,Introduce ID Del Cobro
-;		InputBox, IDCENTRO, Id Del Centro,Introduce ID Del Centro
-;		Send {enter}{-}{-} CONSULTA DE COBROS DE SOCIO POR CENTRO{enter}USE SC_GESCENDEP{enter}GO{enter}SELECT c.ID_Cliente, c.Cod_Cliente, cob.* {enter}FROM Contratos co, Clientes c, Cobros cob{enter}WHERE c.ID_Cliente = co.ID_Cliente {enter}AND co.ID_Contrato = cob.ID_Contrato{enter}AND c.Cod_Cliente = '%CODCLIENTE%'{enter}AND cob.ID_Cobro = %IDCOBRO%{enter}AND co.ID_Centro = %IDCENTRO%{enter}ORDER BY cob.ID_Cobro DESC
-;		Send {F5}
-;		Return
-;	}
-
 #IfWinActive ; Cerramos las teclas rápidas específicas de SQL Server Management Studio
+
+; ---------------------------
+; Firma
+; ---------------------------
+
+::frm::{Enter}Gracias, un saludo.
 
 ; ---------------------------
 ; Correcciones ortográficas
@@ -735,6 +760,8 @@ F6:: Send ^R ; No funciona todavia
 ::transformción::transformación
 ::vovler::volver
 ::vurro::burro
+::berbo::verbo
+::bervo::verbo
 ::helath::health
 
 ; ---------------------------------------------
@@ -781,4 +808,8 @@ Return
 
 #b:: ; -> Win+b = BING
 	Run http://www.bing.com/search?q=%clipboard%
+Return
+
+#d:: ; -> Win+d = DUCKDUCKGO
+	Run https://duckduckgo.com/?q=%clipboard%
 Return
